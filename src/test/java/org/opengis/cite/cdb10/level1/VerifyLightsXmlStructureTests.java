@@ -5,6 +5,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.opengis.cite.cdb10.CDBStructure.LightsXmlStructureTests;
+import org.opengis.cite.cdb10.MetadataTestFixture;
 import org.opengis.cite.cdb10.TestFixture;
 
 import java.io.IOException;
@@ -17,14 +18,13 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 /**
  * Created by martin on 2016-09-01.
  */
-public class VerifyLightsXmlStructureTests extends TestFixture<LightsXmlStructureTests> {
+public class VerifyLightsXmlStructureTests extends MetadataTestFixture<LightsXmlStructureTests> {
 
     private Path metadata;
-    private static Path sourceDirectory = Paths.get(System.getProperty("user.dir"), "src", "test", "java", "org", "opengis", "cite", "cdb10", "fixtures");
-    private static Path duplicatedCodeLightsXmlFile = sourceDirectory.resolve(Paths.get("invalid", "LightsDuplicatedCode.xml"));
-    private static Path invalidCodeTenThousandLightsXmlFile = sourceDirectory.resolve(Paths.get("invalid", "LightsInvalidCodeTenThousand.xml"));
-    private static Path invalidCodeNegativeOneLightsXmlFile = sourceDirectory.resolve(Paths.get("invalid", "LightsInvalidCodeNegativeOne.xml"));
-    private static Path validLightsXmlFile = sourceDirectory.resolve(Paths.get("valid", "Lights.xml"));
+    private static Path duplicatedCodeLightsXmlFile = SOURCE_DIRECTORY.resolve(Paths.get("invalid", "LightsDuplicatedCode.xml"));
+    private static Path invalidCodeTenThousandLightsXmlFile = SOURCE_DIRECTORY.resolve(Paths.get("invalid", "LightsInvalidCodeTenThousand.xml"));
+    private static Path invalidCodeNegativeOneLightsXmlFile = SOURCE_DIRECTORY.resolve(Paths.get("invalid", "LightsInvalidCodeNegativeOne.xml"));
+    private static Path validLightsXmlFile = SOURCE_DIRECTORY.resolve(Paths.get("valid", "Lights.xml"));
 
     public VerifyLightsXmlStructureTests() {
         testSuite = new LightsXmlStructureTests();
