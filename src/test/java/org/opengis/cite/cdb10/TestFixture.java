@@ -42,6 +42,7 @@ public abstract class TestFixture<T extends CommonFixture> {
         cdb_root = Files.createTempDirectory("cdbTest-");
 
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(cdb_root.toFile());
+        when(suite.getAttribute(SuiteAttribute.DIRECTORIES.getName())).thenReturn("");
         testSuite.initCommonFixture(testContext);
         testSuite.obtainTestSubject(testContext);
     }

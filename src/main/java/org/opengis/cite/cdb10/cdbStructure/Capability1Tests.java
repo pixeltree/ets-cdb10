@@ -2,6 +2,7 @@ package org.opengis.cite.cdb10.cdbStructure;
 
 import org.opengis.cite.cdb10.CommonFixture;
 import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,91 +20,126 @@ public class Capability1Tests extends CommonFixture {
     /**
      * Verifies the string is empty.
      */
+    @Test
     public void isValidDirectory() {
-        boolean isDirectory = checkDirectory(path);
-        if (!isDirectory) {
+        if (!checkDirectory(path)) {
             Assert.fail("The CDB location is empty! " + minmaxlod);
         } else {
             String[] selectedDirectories = directories.split("-");
-            ArrayList<String> failMessages = new ArrayList<String>();
-            boolean hasError = false;
+            ArrayList<String> failMessages = new ArrayList<>();
             for (int i = 0; i < selectedDirectories.length; i++) {
-                String selection = selectedDirectories[i];
+                String selectedDirectory = selectedDirectories[i];
 
-                if (selection != null && !selection.isEmpty()) {
+                if (selectedDirectory != null && !selectedDirectory.isEmpty()) {
+                    String code = selectedDirectory.substring(0, 3);
 
+                    if (directoryIsInTilesFolder(code)) {
+                        failMessages.addAll(validateLatLonSplit(selectedDirectory));
+                    }
+                    else if (code.equals("400")) {
+                        failMessages.addAll(validateDirectoryExists("Navigation", selectedDirectory));
+                    } else if (code.substring(0, 1).equals("5")) {
+                        failMessages.addAll(validateDirectoryExists("GTModel", selectedDirectory));
+                    } else if (code.substring(0, 1).equals("6")) {
+                        failMessages.addAll(validateDirectoryExists("MModel", selectedDirectory));
+                    } else if (code.substring(0, 1).equals("7")) {
+                        failMessages.addAll(validateDirectoryExists("Metadata", selectedDirectory));
+                    } else {
+                        failMessages.add("No directory was selected");
+                    }
+                }
+            }
 
-                    String code = selection.substring(0, 3);
+            if (failMessages.size() > 0) {
+                String finalFailMsg = "\n";
+                for (int j = 0; j < failMessages.size(); j++)
+                    finalFailMsg += failMessages.get(j) + "\n";
+                Assert.fail(finalFailMsg);
+            }
+        }
+    }
 
+    private ArrayList<String> validateDirectoryExists(String directoryName, String folderName) {
+        ArrayList<String> failMessages = new ArrayList<>();
+        if (!checkDirectory(path + "/" + directoryName + "/" + folderName)) {
+            failMessages.add("The dataset " + folderName + " does not exist in" + directoryName + "directory");
+        }
+        return failMessages;
+    }
 
-                    if (code.substring(0, 1).equals("0") || code.substring(0, 1).equals("1") || code.substring(0, 1).equals("2") || code.substring(0, 1).equals("3") || code.equals("401")) {
+    private boolean directoryIsInTilesFolder(String code) {
+        return code.substring(0, 1).equals("0") ||
+                code.substring(0, 1).equals("1") ||
+                code.substring(0, 1).equals("2") ||
+                code.substring(0, 1).equals("3") ||
+                code.equals("401");
+    }
 
-                        String[] latlongSplit = latlong.split("_");
+    private ArrayList<String> validateLatLonSplit(String selection) {
+        ArrayList<String> failMessages = new ArrayList<>();
+        String[] latlongSplit = latlong.split("_");
 
-                        // if (latlongSplit.length == 2) {
-                        if (latlongSplit.length == 2 || (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) || (latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty())) {
-                            String[] lodMinMaxSplit = minmaxlod.split("#");
-                            int minLOD = -10;
-                            int maxLOD = 23;
-                            ArrayList<String> result = getLatLongDir(latlongSplit);
-                            String LODFolder = "";
-                            for (int c1 = 0; c1 < result.size(); c1++) {
+        // if (latlongSplit.length == 2) {
+        if (latlongSplit.length == 2 || (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) || (latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty())) {
+            String[] lodMinMaxSplit = minmaxlod.split("#");
+            int minLOD = -10;
+            int maxLOD = 23;
+            ArrayList<String> result = getLatLongDir(latlongSplit);
+            String LODFolder = "";
+            for (int c1 = 0; c1 < result.size(); c1++) {
 
-                                if (!checkDirectory(path + "/Tiles/" + result.get(c1))) {
-                                    hasError = true;
-                                    failMessages.add("Tile " + result.get(c1) + "does not exist in Tiles directory.");
-                                } else {
+                if (!checkDirectory(path + "/Tiles/" + result.get(c1))) {
+                    failMessages.add("Tile " + result.get(c1) + "does not exist in Tiles directory.");
+                } else {
 
-                                    if (!checkDirectory(path + "/Tiles/" + result.get(c1) + "/" + selection)) {
-                                        hasError = true;
-                                        failMessages.add("The dataset " + selection + " does not exist in " + result.get(c1) + " of Tiles directory");
+                    if (!checkDirectory(path + "/Tiles/" + result.get(c1) + "/" + selection)) {
+                        failMessages.add("The dataset " + selection + " does not exist in " + result.get(c1) + " of Tiles directory");
+                    } else {
+
+                        datasetSearchLoop:
+                        for (int j = 0; j < lodMinMaxSplit.length; j = j + 2) {
+                            String innerSplit[] = lodMinMaxSplit[j].split("@");
+                            String dataset = innerSplit[0];
+                            minLOD = -10;
+                            maxLOD = 23;
+                            if (dataset.equals(selection)) {
+                                if (innerSplit[1].equals("min")) {
+                                    if (!lodMinMaxSplit[j + 1].isEmpty())
+                                        minLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
+                                    // System.out.println("min " + selection + "= " + minLOD);
+                                }
+                                if (innerSplit[1].equals("max")) {
+                                    if ((lodMinMaxSplit.length % 2) == 0) {
+                                        if (!lodMinMaxSplit[j + 1].isEmpty())
+                                            maxLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
                                     } else {
-
-                                        datasetSearchLoop:
-                                        for (int j = 0; j < lodMinMaxSplit.length; j = j + 2) {
-                                            String innerSplit[] = lodMinMaxSplit[j].split("@");
-                                            String dataset = innerSplit[0];
-                                            minLOD = -10;
-                                            maxLOD = 23;
-                                            if (dataset.equals(selection)) {
-                                                if (innerSplit[1].equals("min")) {
-                                                    if (!lodMinMaxSplit[j + 1].isEmpty())
-                                                        minLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
-                                                    // System.out.println("min " + selection + "= " + minLOD);
-                                                }
-                                                if (innerSplit[1].equals("max")) {
-                                                    if ((lodMinMaxSplit.length % 2) == 0) {
-                                                        if (!lodMinMaxSplit[j + 1].isEmpty())
-                                                            maxLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
-                                                    } else {
-                                                        if (j < lodMinMaxSplit.length - 1) {
-                                                            if (!lodMinMaxSplit[j + 1].isEmpty())
-                                                                maxLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
-                                                        }
-                                                    }
-                                                    for (int k = 0; k <= maxLOD; k++) {
-                                                        if (k < 10)
-                                                            LODFolder = "L0" + Integer.toString(k);
-                                                        else
-                                                            LODFolder = "L" + Integer.toString(k);
-
-                                                        if (!checkDirectory(path + "/Tiles/" + result.get(c1) + "/" + dataset + "/" + LODFolder)) {
-                                                            hasError = true;
-                                                            failMessages.add("The LOD folder " + LODFolder + " does not exist in  " + dataset + " dataset of " + result.get(c1));
-                                                        }
-
-                                                    }
-
-                                                    break datasetSearchLoop;
-                                                }
-
-                                            }
-
+                                        if (j < lodMinMaxSplit.length - 1) {
+                                            if (!lodMinMaxSplit[j + 1].isEmpty())
+                                                maxLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
                                         }
                                     }
+                                    for (int k = 0; k <= maxLOD; k++) {
+                                        if (k < 10)
+                                            LODFolder = "L0" + Integer.toString(k);
+                                        else
+                                            LODFolder = "L" + Integer.toString(k);
+
+                                        if (!checkDirectory(path + "/Tiles/" + result.get(c1) + "/" + dataset + "/" + LODFolder)) {
+                                            failMessages.add("The LOD folder " + LODFolder + " does not exist in  " + dataset + " dataset of " + result.get(c1));
+                                        }
+
+                                    }
+
+                                    break datasetSearchLoop;
                                 }
+
                             }
+
                         }
+                    }
+                }
+            }
+        }
 
 //                           else if(latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()){
 //                               ArrayList < String > result = getLatLongDir(latlongSplit);
@@ -126,53 +162,10 @@ public class Capability1Tests extends CommonFixture {
 //                                   }
 //                               }
 //                           }
-                        else {
-                            hasError = true;
-                            failMessages.add("None or Bad selection of geographical coverage to check Tiles directory");
-                        }
-                    }
-
-
-                    //}
-                    else if (code.equals("400")) {
-                        isDirectory = checkDirectory(path + "/Navigation/" + selection);
-                        if (!isDirectory) {
-                            hasError = true;
-                            failMessages.add("The dataset " + selection + " does not exist in Navigation directory");
-                        }
-                    } else if (code.substring(0, 1).equals("5")) {
-                        isDirectory = checkDirectory(path + "/GTModel/" + selection);
-                        if (!isDirectory) {
-                            hasError = true;
-                            failMessages.add("The dataset " + selection + " does not exist in GTModel directory");
-                        }
-                    } else if (code.substring(0, 1).equals("6")) {
-                        isDirectory = checkDirectory(path + "/MModel/" + selection);
-                        if (!isDirectory) {
-                            hasError = true;
-                            failMessages.add("The dataset " + selection + " does not exist in MModel directory");
-                        }
-                    } else if (code.substring(0, 1).equals("7")) {
-                        isDirectory = checkDirectory(path + "/Metadata/" + selection);
-                        if (!isDirectory) {
-                            hasError = true;
-                            failMessages.add("The dataset " + selection + " does not exist in Metadata directory");
-                        }
-                    } else {
-                        hasError = true;
-                        failMessages.add("No directory was selected");
-                    }
-
-                }
-            }
-
-            if (hasError) {
-                String finalFailMsg = "\n";
-                for (int j = 0; j < failMessages.size(); j++)
-                    finalFailMsg += failMessages.get(j) + "\n";
-                Assert.fail(finalFailMsg);
-            }
+        else {
+            failMessages.add("None or Bad selection of geographical coverage to check Tiles directory");
         }
+        return failMessages;
     }
 
     private String getLatDir(double latitude) {

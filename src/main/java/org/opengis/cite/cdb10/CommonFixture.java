@@ -73,8 +73,8 @@ public class CommonFixture {
         path = testContext.getSuite().getAttribute(
                 SuiteAttribute.TEST_SUBJECT.getName()).toString().trim();
 
-//        directories = testContext.getSuite().getAttribute(
-//                SuiteAttribute.DIRECTORIES.getName()).toString();
+        directories = testContext.getSuite().getAttribute(
+                SuiteAttribute.DIRECTORIES.getName()).toString();
 //
 //        latlong = testContext.getSuite().getAttribute(
 //                SuiteAttribute.LATLONG.getName()).toString();

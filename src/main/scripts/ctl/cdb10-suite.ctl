@@ -64,7 +64,7 @@
             </p>
 
 
-            <div id="directories" style="display:none">
+            <div id="directories">
               <div>
                 <p>Geographic Coverage</p>
                 <table frame="box">
