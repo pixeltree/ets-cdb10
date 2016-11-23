@@ -216,41 +216,10 @@ public class Capability1Tests extends CommonFixture {
                 TileLatitudeFolder minLatFolder = new TileLatitudeFolder(minLat);
                 TileLatitudeFolder maxLatFolder = new TileLatitudeFolder(maxLat);
 
-                int minLatZone = Integer.parseInt(minLatFolder.getFolderName().substring(1));
-                int maxLatZone = Integer.parseInt(maxLatFolder.getFolderName().substring(1));
+                ArrayList<TileLatitudeFolder> latDir = TileLatitudeFolder.getInclusiveDirectories(minLatFolder, maxLatFolder);
 
-                ArrayList<String> latDir = new ArrayList<>();
                 ArrayList<String> longDir = new ArrayList<>();
-
-                if (minLat * maxLat < 0) {
-                    for (int i = 1; i <= minLatZone; i++) {
-                        latDir.add(minLatFolder.getDirection() + "0" + i);
-                    }
-
-                    for (int j = 0; j < maxLatZone; j++) {
-                        if (j < 10)
-                            latDir.add(maxLatFolder.getDirection() + "0" + j);
-                        else
-                            latDir.add(maxLatFolder.getDirection() + String.format("%d", j));
-                    }
-                }
-
-                if (minLat * maxLat > 0) {
-                    int minL = minLatZone;
-                    int maxL = maxLatZone;
-                    if (minLatZone > maxLatZone) {
-                        minL = maxLatZone;
-                        maxL = minLatZone;
-                    }
-
-                    for (int k = minL; k <= maxL; k++) {
-                        if (k < 10)
-                            latDir.add(minLatFolder.getDirection() + "0" + k);
-                        else
-                            latDir.add(minLatFolder.getDirection() + String.format("%d", k));
-                    }
-                }
-
+                
                 int minLongZone = Integer.parseInt(TilesUtilities.getLongDir(minLat, minLong).substring(1));
                 int maxLongZone = Integer.parseInt(TilesUtilities.getLongDir(maxLat, maxLong).substring(1));
 
