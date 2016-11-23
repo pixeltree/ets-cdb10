@@ -217,19 +217,14 @@ public class Capability1Tests extends CommonFixture {
                 TileLatitudeFolder maxLatFolder = new TileLatitudeFolder(maxLat);
 
                 int minLatZone = Integer.parseInt(minLatFolder.getFolderName().substring(1));
-                int minLongZone = Integer.parseInt(TilesUtilities.getLongDir(minLat, minLong).substring(1));
                 int maxLatZone = Integer.parseInt(maxLatFolder.getFolderName().substring(1));
-                int maxLongZone = Integer.parseInt(TilesUtilities.getLongDir(maxLat, maxLong).substring(1));
 
                 ArrayList<String> latDir = new ArrayList<>();
                 ArrayList<String> longDir = new ArrayList<>();
 
                 if (minLat * maxLat < 0) {
                     for (int i = 1; i <= minLatZone; i++) {
-                        if (i < 10)
-                            latDir.add(minLatFolder.getDirection() + "0" + i);
-                        else
-                            latDir.add(minLatFolder.getDirection() + String.format("%d", i));
+                        latDir.add(minLatFolder.getDirection() + "0" + i);
                     }
 
                     for (int j = 0; j < maxLatZone; j++) {
@@ -239,6 +234,26 @@ public class Capability1Tests extends CommonFixture {
                             latDir.add(maxLatFolder.getDirection() + String.format("%d", j));
                     }
                 }
+
+                if (minLat * maxLat > 0) {
+                    int minL = minLatZone;
+                    int maxL = maxLatZone;
+                    if (minLatZone > maxLatZone) {
+                        minL = maxLatZone;
+                        maxL = minLatZone;
+                    }
+
+                    for (int k = minL; k <= maxL; k++) {
+                        if (k < 10)
+                            latDir.add(minLatFolder.getDirection() + "0" + k);
+                        else
+                            latDir.add(minLatFolder.getDirection() + String.format("%d", k));
+                    }
+                }
+
+                int minLongZone = Integer.parseInt(TilesUtilities.getLongDir(minLat, minLong).substring(1));
+                int maxLongZone = Integer.parseInt(TilesUtilities.getLongDir(maxLat, maxLong).substring(1));
+
                 if (minLong * maxLong < 0) {
                     for (int m = 1; m <= minLongZone; m++) {
                         // for (int m = 1; m <= minLongZone; m=m+getDLonZone(minLat)) {
@@ -260,22 +275,6 @@ public class Capability1Tests extends CommonFixture {
                             longDir.add(TilesUtilities.getLongDir(maxLat, maxLong).substring(0, 1) + "0" + n);
                         else
                             longDir.add(TilesUtilities.getLongDir(maxLat, maxLong).substring(0, 1) + n);
-                    }
-                }
-
-                if (minLat * maxLat > 0) {
-                    int minL = minLatZone;
-                    int maxL = maxLatZone;
-                    if (minLatZone > maxLatZone) {
-                        minL = maxLatZone;
-                        maxL = minLatZone;
-                    }
-
-                    for (int k = minL; k <= maxL; k++) {
-                        if (k < 10)
-                            latDir.add(minLatFolder.getFolderName().substring(0, 1) + "0" + k);
-                        else
-                            latDir.add(minLatFolder.getFolderName().substring(0, 1) + k);
                     }
                 }
                 if (minLong * maxLong > 0) {
