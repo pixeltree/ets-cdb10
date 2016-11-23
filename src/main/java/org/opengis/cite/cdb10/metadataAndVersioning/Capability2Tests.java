@@ -25,8 +25,7 @@ public class Capability2Tests extends CommonFixture {
         Object obj = testContext.getSuite().getAttribute(SuiteAttribute.LEVEL.getName());
         if ((null != obj)) {
             Integer level = Integer.class.cast(obj);
-            Assert.assertTrue(level > 1,
-                    "Conformance level " + "2 will not be checked since ics = " + level);
+            Assert.assertTrue(level == 2, "Conformance level 2 will not be checked since ics = " + level);
         }
         super.obtainTestSubject(testContext);
     }

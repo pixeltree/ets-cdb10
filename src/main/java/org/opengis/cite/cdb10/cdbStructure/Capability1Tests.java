@@ -1,7 +1,10 @@
 package org.opengis.cite.cdb10.cdbStructure;
 
 import org.opengis.cite.cdb10.CommonFixture;
+import org.opengis.cite.cdb10.SuiteAttribute;
 import org.testng.Assert;
+import org.testng.ITestContext;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -13,9 +16,18 @@ import java.util.Collections;
  */
 public class Capability1Tests extends CommonFixture {
 
-    public Capability1Tests() {
+    @BeforeClass
+    public void obtainTestSubject(ITestContext testContext) {
+        Object obj = testContext.getSuite().getAttribute(SuiteAttribute.LEVEL.getName());
+        if ((null != obj)) {
+            Integer level = Integer.class.cast(obj);
+            Assert.assertTrue(level == 1, "Conformance level 1 will not be checked since ics = " + level);
+        }
+        super.obtainTestSubject(testContext);
     }
 
+    public Capability1Tests() {
+    }
 
     /**
      * Verifies the string is empty.
@@ -80,10 +92,10 @@ public class Capability1Tests extends CommonFixture {
         String[] latlongSplit = latlong.split("_");
 
         // if (latlongSplit.length == 2) {
-        if (latlongSplit.length == 2 || (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) || (latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty())) {
+        if (latlongSplit.length == 2 ||
+                (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) ||
+                (latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty())) {
             String[] lodMinMaxSplit = minmaxlod.split("#");
-            int minLOD = -10;
-            int maxLOD = 23;
             ArrayList<String> result = getLatLongDir(latlongSplit);
             String LODFolder = "";
             for (int c1 = 0; c1 < result.size(); c1++) {
@@ -100,8 +112,8 @@ public class Capability1Tests extends CommonFixture {
                         for (int j = 0; j < lodMinMaxSplit.length; j = j + 2) {
                             String innerSplit[] = lodMinMaxSplit[j].split("@");
                             String dataset = innerSplit[0];
-                            minLOD = -10;
-                            maxLOD = 23;
+                            int minLOD = -10;
+                            int maxLOD = 23;
                             if (dataset.equals(selection)) {
                                 if (innerSplit[1].equals("min")) {
                                     if (!lodMinMaxSplit[j + 1].isEmpty())
@@ -169,7 +181,6 @@ public class Capability1Tests extends CommonFixture {
     }
 
     private String getLatDir(double latitude) {
-
         int dLatCell = 1;
         int sliceID = (int) ((latitude + 90) / dLatCell);
         int nBSliceID = 2 * (int) (90 / dLatCell);
@@ -186,7 +197,6 @@ public class Capability1Tests extends CommonFixture {
                 LatDir = "N0" + val;
             else
                 LatDir = "N" + val;
-
         }
 
         return LatDir;
@@ -215,11 +225,9 @@ public class Capability1Tests extends CommonFixture {
                 LongDir = "E0" + val;
             else
                 LongDir = "E" + val;
-
         }
 
         return LongDir;
-
     }
 
     private int getDLonZone(double latitude) {
@@ -238,13 +246,10 @@ public class Capability1Tests extends CommonFixture {
             dLonZone = 1;
 
         return dLonZone;
-
     }
-
 
     private ArrayList<String> getLatLongDir(String[] latlongSplit) {
         ArrayList<String> latLongDir = new ArrayList<String>();
-
 
         if (latlongSplit.length == 2) {
             double minLat = Double.parseDouble(latlongSplit[0]);
@@ -253,18 +258,17 @@ public class Capability1Tests extends CommonFixture {
             latLongDir.add(getLatDir(minLat) + "/" + getLongDir(minLat, minLong));
 
             //    System.out.println("First two");
-
-
         } else if (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) {
             double maxLat = Double.parseDouble(latlongSplit[2]);
             double maxLong = Double.parseDouble(latlongSplit[3]);
             latLongDir.add(getLatDir(maxLat) + "/" + getLongDir(maxLat, maxLong));
 
             //  System.out.println("Last two");
-
-        } else if (latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty()) {
-
-
+        } else if (latlongSplit.length == 4 &&
+                !latlongSplit[0].isEmpty() &&
+                !latlongSplit[1].isEmpty() &&
+                !latlongSplit[2].isEmpty() &&
+                !latlongSplit[3].isEmpty()) {
             double minLat = Double.parseDouble(latlongSplit[0]);
             double minLong = Double.parseDouble(latlongSplit[1]);
             double maxLat = Double.parseDouble(latlongSplit[2]);
@@ -279,14 +283,12 @@ public class Capability1Tests extends CommonFixture {
             ArrayList<String> longDir = new ArrayList<String>();
 
             if (minLat * maxLat < 0) {
-
                 for (int i = 1; i <= minLatZone; i++) {
                     if (i < 10)
                         latDir.add(getLatDir(minLat).substring(0, 1) + "0" + i);
                     else
                         latDir.add(getLatDir(minLat).substring(0, 1) + i);
                 }
-
 
                 for (int j = 0; j < maxLatZone; j++) {
                     if (j < 10)
@@ -327,18 +329,14 @@ public class Capability1Tests extends CommonFixture {
                     maxL = minLatZone;
                 }
 
-
                 for (int k = minL; k <= maxL; k++) {
                     if (k < 10)
                         latDir.add(getLatDir(minLat).substring(0, 1) + "0" + k);
                     else
                         latDir.add(getLatDir(minLat).substring(0, 1) + k);
                 }
-
-
             }
             if (minLong * maxLong > 0) {
-
                 int minLo = minLongZone;
                 int maxLo = maxLongZone;
                 if (minLongZone > maxLongZone) {
@@ -353,10 +351,7 @@ public class Capability1Tests extends CommonFixture {
                     else
                         longDir.add(getLongDir(minLat, minLong).substring(0, 1) + l);
                 }
-
-
             }
-
 
             for (int a = 0; a < latDir.size(); a++) {
                 double zone = Double.parseDouble(latDir.get(a).substring(1));
@@ -369,14 +364,9 @@ public class Capability1Tests extends CommonFixture {
                     latLongDir.add(latDir.get(a) + "/" + longDir.get(b));
                 }
             }
-
-
         }
-
-
         return latLongDir;
     }
-
 
     private boolean checkDirectory(String path) {
         File file = new File(path);
