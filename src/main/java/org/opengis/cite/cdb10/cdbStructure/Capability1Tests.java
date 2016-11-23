@@ -180,28 +180,6 @@ public class Capability1Tests extends CommonFixture {
         return failMessages;
     }
 
-    private String getLatDir(double latitude) {
-        int dLatCell = 1;
-        int sliceID = (int) ((latitude + 90) / dLatCell);
-        int nBSliceID = 2 * (int) (90 / dLatCell);
-        String LatDir = "";
-        if (latitude < 0) {
-            int val = Math.abs(nBSliceID / 2 - sliceID);
-            if (val < 10)
-                LatDir = "S0" + val;
-            else
-                LatDir = "S" + val;
-        } else if (latitude >= 0) {
-            int val = Math.abs(sliceID - nBSliceID / 2);
-            if (val < 10)
-                LatDir = "N0" + val;
-            else
-                LatDir = "N" + val;
-        }
-
-        return LatDir;
-    }
-
     private String getLongDir(double latitude, double longitude) {
         String LongDir = "";
         int dLonCellBasic = 1;
@@ -251,117 +229,126 @@ public class Capability1Tests extends CommonFixture {
     private ArrayList<String> getLatLongDir(String[] latlongSplit) {
         ArrayList<String> latLongDir = new ArrayList<String>();
 
-        if (latlongSplit.length == 2) {
-            double minLat = Double.parseDouble(latlongSplit[0]);
-            double minLong = Double.parseDouble(latlongSplit[1]);
+        String inputMinLat = latlongSplit[0];
+        String inputMinLon = latlongSplit[1];
+        String inputMaxLat = latlongSplit[2];
+        String inputMaxLon = latlongSplit[3];
 
-            latLongDir.add(getLatDir(minLat) + "/" + getLongDir(minLat, minLong));
+        // No maximum lat/lon provided
+        if (latlongSplit.length == 2) {
+            double minLat = Double.parseDouble(inputMinLat);
+            double minLong = Double.parseDouble(inputMinLon);
+
+            latLongDir.add(TilesUtilities.getLatDir(minLat) + "/" + getLongDir(minLat, minLong));
 
             //    System.out.println("First two");
-        } else if (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) {
-            double maxLat = Double.parseDouble(latlongSplit[2]);
-            double maxLong = Double.parseDouble(latlongSplit[3]);
-            latLongDir.add(getLatDir(maxLat) + "/" + getLongDir(maxLat, maxLong));
+        } else {
+            // No minimum lat/lon provided
+            if (latlongSplit.length == 4 && inputMinLat.isEmpty() && inputMinLon.isEmpty()) {
+                double maxLat = Double.parseDouble(inputMaxLat);
+                double maxLong = Double.parseDouble(inputMaxLon);
+                latLongDir.add(TilesUtilities.getLatDir(maxLat) + "/" + getLongDir(maxLat, maxLong));
 
-            //  System.out.println("Last two");
-        } else if (latlongSplit.length == 4 &&
-                !latlongSplit[0].isEmpty() &&
-                !latlongSplit[1].isEmpty() &&
-                !latlongSplit[2].isEmpty() &&
-                !latlongSplit[3].isEmpty()) {
-            double minLat = Double.parseDouble(latlongSplit[0]);
-            double minLong = Double.parseDouble(latlongSplit[1]);
-            double maxLat = Double.parseDouble(latlongSplit[2]);
-            double maxLong = Double.parseDouble(latlongSplit[3]);
+                //  System.out.println("Last two");
+            } else if (latlongSplit.length == 4 &&
+                    !inputMinLat.isEmpty() &&
+                    !inputMinLon.isEmpty() &&
+                    !inputMaxLat.isEmpty() &&
+                    !inputMaxLon.isEmpty()) {
+                double minLat = Double.parseDouble(inputMinLat);
+                double minLong = Double.parseDouble(inputMinLon);
+                double maxLat = Double.parseDouble(inputMaxLat);
+                double maxLong = Double.parseDouble(inputMaxLon);
 
-            int minLatZone = Integer.parseInt(getLatDir(minLat).substring(1));
-            int minLongZone = Integer.parseInt(getLongDir(minLat, minLong).substring(1));
-            int maxLatZone = Integer.parseInt(getLatDir(maxLat).substring(1));
-            int maxLongZone = Integer.parseInt(getLongDir(maxLat, maxLong).substring(1));
+                int minLatZone = Integer.parseInt(TilesUtilities.getLatDir(minLat).substring(1));
+                int minLongZone = Integer.parseInt(getLongDir(minLat, minLong).substring(1));
+                int maxLatZone = Integer.parseInt(TilesUtilities.getLatDir(maxLat).substring(1));
+                int maxLongZone = Integer.parseInt(getLongDir(maxLat, maxLong).substring(1));
 
-            ArrayList<String> latDir = new ArrayList<String>();
-            ArrayList<String> longDir = new ArrayList<String>();
+                ArrayList<String> latDir = new ArrayList<>();
+                ArrayList<String> longDir = new ArrayList<>();
 
-            if (minLat * maxLat < 0) {
-                for (int i = 1; i <= minLatZone; i++) {
-                    if (i < 10)
-                        latDir.add(getLatDir(minLat).substring(0, 1) + "0" + i);
-                    else
-                        latDir.add(getLatDir(minLat).substring(0, 1) + i);
+                if (minLat * maxLat < 0) {
+                    for (int i = 1; i <= minLatZone; i++) {
+                        if (i < 10)
+                            latDir.add(TilesUtilities.getLatDir(minLat).substring(0, 1) + "0" + i);
+                        else
+                            latDir.add(TilesUtilities.getLatDir(minLat).substring(0, 1) + i);
+                    }
+
+                    for (int j = 0; j < maxLatZone; j++) {
+                        if (j < 10)
+                            latDir.add(TilesUtilities.getLatDir(maxLat).substring(0, 1) + "0" + j);
+                        else
+                            latDir.add(TilesUtilities.getLatDir(maxLat).substring(0, 1) + j);
+                    }
+                }
+                if (minLong * maxLong < 0) {
+                    for (int m = 1; m <= minLongZone; m++) {
+                        // for (int m = 1; m <= minLongZone; m=m+getDLonZone(minLat)) {
+                        if (m < 10)
+                            longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "00" + m);
+                        else if (m >= 10 && m < 100)
+                            longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "0" + m);
+                        else
+                            longDir.add(getLongDir(minLat, minLong).substring(0, 1) + m);
+                    }
+
+                    Collections.reverse(longDir);
+
+                    for (int n = 0; n < maxLongZone; n++) {
+                        // for (int n = 0; n <= maxLongZone; n=n+getDLonZone(maxLat)) {
+                        if (n < 10)
+                            longDir.add(getLongDir(maxLat, maxLong).substring(0, 1) + "00" + n);
+                        else if (n >= 10 && n < 100)
+                            longDir.add(getLongDir(maxLat, maxLong).substring(0, 1) + "0" + n);
+                        else
+                            longDir.add(getLongDir(maxLat, maxLong).substring(0, 1) + n);
+                    }
                 }
 
-                for (int j = 0; j < maxLatZone; j++) {
-                    if (j < 10)
-                        latDir.add(getLatDir(maxLat).substring(0, 1) + "0" + j);
-                    else
-                        latDir.add(getLatDir(maxLat).substring(0, 1) + j);
-                }
-            }
-            if (minLong * maxLong < 0) {
-                for (int m = 1; m <= minLongZone; m++) {
-                    // for (int m = 1; m <= minLongZone; m=m+getDLonZone(minLat)) {
-                    if (m < 10)
-                        longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "00" + m);
-                    else if (m >= 10 && m < 100)
-                        longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "0" + m);
-                    else
-                        longDir.add(getLongDir(minLat, minLong).substring(0, 1) + m);
-                }
+                if (minLat * maxLat > 0) {
+                    int minL = minLatZone;
+                    int maxL = maxLatZone;
+                    if (minLatZone > maxLatZone) {
+                        minL = maxLatZone;
+                        maxL = minLatZone;
+                    }
 
-                Collections.reverse(longDir);
-
-                for (int n = 0; n < maxLongZone; n++) {
-                    // for (int n = 0; n <= maxLongZone; n=n+getDLonZone(maxLat)) {
-                    if (n < 10)
-                        longDir.add(getLongDir(maxLat, maxLong).substring(0, 1) + "00" + n);
-                    else if (n >= 10 && n < 100)
-                        longDir.add(getLongDir(maxLat, maxLong).substring(0, 1) + "0" + n);
-                    else
-                        longDir.add(getLongDir(maxLat, maxLong).substring(0, 1) + n);
+                    for (int k = minL; k <= maxL; k++) {
+                        if (k < 10)
+                            latDir.add(TilesUtilities.getLatDir(minLat).substring(0, 1) + "0" + k);
+                        else
+                            latDir.add(TilesUtilities.getLatDir(minLat).substring(0, 1) + k);
+                    }
                 }
-            }
-
-            if (minLat * maxLat > 0) {
-                int minL = minLatZone;
-                int maxL = maxLatZone;
-                if (minLatZone > maxLatZone) {
-                    minL = maxLatZone;
-                    maxL = minLatZone;
+                if (minLong * maxLong > 0) {
+                    int minLo = minLongZone;
+                    int maxLo = maxLongZone;
+                    if (minLongZone > maxLongZone) {
+                        minLo = maxLongZone;
+                        maxLo = minLongZone;
+                    }
+                    for (int l = minLo; l <= maxLo; l++) {
+                        if (l < 10)
+                            longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "00" + l);
+                        else if (l >= 10 && l < 100)
+                            longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "0" + l);
+                        else
+                            longDir.add(getLongDir(minLat, minLong).substring(0, 1) + l);
+                    }
                 }
 
-                for (int k = minL; k <= maxL; k++) {
-                    if (k < 10)
-                        latDir.add(getLatDir(minLat).substring(0, 1) + "0" + k);
-                    else
-                        latDir.add(getLatDir(minLat).substring(0, 1) + k);
-                }
-            }
-            if (minLong * maxLong > 0) {
-                int minLo = minLongZone;
-                int maxLo = maxLongZone;
-                if (minLongZone > maxLongZone) {
-                    minLo = maxLongZone;
-                    maxLo = minLongZone;
-                }
-                for (int l = minLo; l <= maxLo; l++) {
-                    if (l < 10)
-                        longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "00" + l);
-                    else if (l >= 10 && l < 100)
-                        longDir.add(getLongDir(minLat, minLong).substring(0, 1) + "0" + l);
-                    else
-                        longDir.add(getLongDir(minLat, minLong).substring(0, 1) + l);
-                }
-            }
+                for (int a = 0; a < latDir.size(); a++) {
+                    double zone = Double.parseDouble(latDir.get(a).substring(1));
+                    if (latDir.get(a).substring(0, 1).equals("S"))
+                        zone = zone * (-1);
 
-            for (int a = 0; a < latDir.size(); a++) {
-                double zone = Double.parseDouble(latDir.get(a).substring(1));
-                if (latDir.get(a).substring(0, 1).equals("S"))
-                    zone = zone * (-1);
+                    int dLonZone = getDLonZone(zone);
 
-                int dLonZone = getDLonZone(zone);
-
-                for (int b = 0; b < longDir.size(); b = b + dLonZone) {
-                    latLongDir.add(latDir.get(a) + "/" + longDir.get(b));
+                    for (int b = 0; b < longDir.size(); b = b + dLonZone) {
+                        latLongDir.add(latDir.get(a) + "/" + longDir.get(b));
+                    }
                 }
             }
         }
