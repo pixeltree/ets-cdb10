@@ -10,14 +10,14 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLatDirectory_LatitudeLessThanZero() {
-        Assert.assertEquals(TilesUtilities.getLatDir(-5.2), "S06");
-        Assert.assertEquals(TilesUtilities.getLatDir(-11), "S11");
+        Assert.assertEquals(new TileLatitudeFolder(-5.2).getFolderName(), "S06");
+        Assert.assertEquals(new TileLatitudeFolder(-11).getFolderName(), "S11");
     }
 
     @Test
     public void getLatDirectory_LatitudeMoreThanZero() {
-        Assert.assertEquals(TilesUtilities.getLatDir(2.5), "N02");
-        Assert.assertEquals(TilesUtilities.getLatDir(62.3), "N62");
+        Assert.assertEquals(new TileLatitudeFolder(2.5).getFolderName(), "N02");
+        Assert.assertEquals(new TileLatitudeFolder(62.3).getFolderName(), "N62");
     }
 
     @Test

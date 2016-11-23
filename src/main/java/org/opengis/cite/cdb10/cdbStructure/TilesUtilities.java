@@ -4,28 +4,11 @@ package org.opengis.cite.cdb10.cdbStructure;
  * Created by martin on 2016-11-23.
  */
 public class TilesUtilities {
-    public static String getLatDir(double latitude) {
-        int dLatCell = 1;
-        int sliceID = (int) ((latitude + 90) / dLatCell);
-        int nBSliceID = 2 * 90 / dLatCell;
-
-        String LatDir = "";
-        if (latitude < 0) {
-            int val = Math.abs(nBSliceID / 2 - sliceID);
-            LatDir = String.format("S%02d", val);
-        } else if (latitude >= 0) {
-            int val = Math.abs(sliceID - nBSliceID / 2);
-            LatDir = String.format("N%02d", val);
-        }
-
-        return LatDir;
-    }
-
     public static String getLongDir(double latitude, double longitude) {
         String LongDir = "";
+
         int dLonCellBasic = 1;
         int dLonCell = dLonCellBasic * getDLonZone(latitude);
-        int nBSliceIDIndex = 2 * 180 / dLonCell;
         int sideIDIndex = ((int) ((longitude + 180) / dLonCell)) * getDLonZone(latitude);
         int nBSliceIDIndexEq = 2 * 180 / dLonCellBasic;
         if (longitude < 0) {
@@ -39,7 +22,7 @@ public class TilesUtilities {
         return LongDir;
     }
 
-    public static int getDLonZone(double latitude) {
+    static int getDLonZone(double latitude) {
         int dLonZone = 0;
         if (latitude >= 89 && latitude < 90 || latitude >= -90 && latitude < -89)
             dLonZone = 12;
@@ -57,3 +40,4 @@ public class TilesUtilities {
         return dLonZone;
     }
 }
+
