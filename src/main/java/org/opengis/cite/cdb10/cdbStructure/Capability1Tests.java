@@ -219,7 +219,7 @@ public class Capability1Tests extends CommonFixture {
                 ArrayList<TileLatitudeFolder> latDir = TileLatitudeFolder.getInclusiveDirectories(minLatFolder, maxLatFolder);
 
                 ArrayList<String> longDir = new ArrayList<>();
-                
+
                 int minLongZone = Integer.parseInt(TilesUtilities.getLongDir(minLat, minLong).substring(1));
                 int maxLongZone = Integer.parseInt(TilesUtilities.getLongDir(maxLat, maxLong).substring(1));
 
@@ -264,8 +264,8 @@ public class Capability1Tests extends CommonFixture {
                 }
 
                 for (int a = 0; a < latDir.size(); a++) {
-                    double zone = Double.parseDouble(latDir.get(a).substring(1));
-                    if (latDir.get(a).substring(0, 1).equals("S"))
+                    double zone = Double.parseDouble(latDir.get(a).getFolderName().substring(1));
+                    if (latDir.get(a).getDirection() == 'S')
                         zone = zone * (-1);
 
                     int dLonZone = TilesUtilities.getDLonZone(zone);
