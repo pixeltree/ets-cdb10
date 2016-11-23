@@ -19,4 +19,12 @@ public class TilesUtilitiesTest {
         Assert.assertEquals(TilesUtilities.getLatDir(2.5), "N02");
         Assert.assertEquals(TilesUtilities.getLatDir(62.3), "N62");
     }
+
+    @Test
+    public void getLonDirectory() {
+        Assert.assertEquals(TilesUtilities.getLongDir(-6, 45), "E045");
+        Assert.assertEquals(TilesUtilities.getLongDir(62, -160), "W160");
+        Assert.assertEquals(TilesUtilities.getLongDir(-5.2, 45.2), "E045");
+        Assert.assertEquals(TilesUtilities.getLongDir(-5, 45), "E045");
+    }
 }
