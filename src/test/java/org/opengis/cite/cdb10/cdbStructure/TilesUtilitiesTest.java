@@ -3,6 +3,8 @@ package org.opengis.cite.cdb10.cdbStructure;
 import org.junit.Test;
 import org.testng.Assert;
 
+import java.util.ArrayList;
+
 /**
  * Created by martin on 2016-11-23.
  */
@@ -23,4 +25,25 @@ public class TilesUtilitiesTest {
         Assert.assertEquals(TilesUtilities.getLongDir(-5.2, 45.2), "E045");
         Assert.assertEquals(TilesUtilities.getLongDir(-5, 45), "E045");
     }
+
+    @Test
+    public void getLonDirectories_Case1() {
+        ArrayList<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -179);
+
+        Assert.assertEquals(folders.size(), 1);
+        Assert.assertEquals(folders.get(0).getLatitudeFolder(), "S90");
+        Assert.assertEquals(folders.get(0).getLongitudeFolder(), "W180");
+    }
+
+    @Test
+    public void getLonDirectories_Case2() {
+        ArrayList<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -88.1, -179);
+
+        Assert.assertEquals(folders.size(), 2);
+        Assert.assertEquals(folders.get(0).getLatitudeFolder(), "S90");
+        Assert.assertEquals(folders.get(0).getLongitudeFolder(), "W180");
+        Assert.assertEquals(folders.get(1).getLatitudeFolder(), "S89");
+        Assert.assertEquals(folders.get(1).getLongitudeFolder(), "W180");
+    }
 }
+
