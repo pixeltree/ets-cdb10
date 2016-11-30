@@ -58,4 +58,13 @@ public class TilesUtilitiesTest {
         Assert.assertEquals(folders.size(), 1);
         Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
     }
+
+    @Test
+    public void getLonDirectories_Zone6() {
+        HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-89, -180, -88, -168);
+
+        Assert.assertEquals(folders.size(), 2);
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 89), "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 89), "W174")));
+    }
 }
