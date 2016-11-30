@@ -1,7 +1,6 @@
 package org.opengis.cite.cdb10.cdbStructure;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 
 /**
  * Created by martin on 2016-11-23.
@@ -43,8 +42,8 @@ public class TilesUtilities {
         return dLonZone;
     }
 
-    public static LinkedHashSet<TileFolder> getLonDirectories(double minLat, double minLon, double maxLat, double maxLon) {
-        LinkedHashSet<TileFolder> folders = new LinkedHashSet<>();
+    public static HashSet<TileFolder> getLonDirectories(double minLat, double minLon, double maxLat, double maxLon) {
+        HashSet<TileFolder> folders = new HashSet<>();
 
         for (int lat = (int) Math.floor(minLat); lat < Math.ceil(maxLat); lat++) {
             for (int lon = (int) Math.floor(minLon); lon < Math.ceil(maxLon); lon++) {

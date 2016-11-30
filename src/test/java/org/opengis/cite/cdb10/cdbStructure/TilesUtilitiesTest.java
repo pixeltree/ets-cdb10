@@ -3,8 +3,7 @@ package org.opengis.cite.cdb10.cdbStructure;
 import org.junit.Test;
 import org.testng.Assert;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 
 /**
  * Created by martin on 2016-11-23.
@@ -29,7 +28,7 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLonDirectories_Case1() {
-        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -179);
+        HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -179);
 
         Assert.assertEquals(folders.size(), 1);
         Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
@@ -37,7 +36,7 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLonDirectories_Case2() {
-        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -88.1, -179);
+        HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -88.1, -179);
 
         Assert.assertEquals(folders.size(), 2);
         Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
@@ -46,7 +45,7 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLonDirectories_Case3() {
-        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168);
+        HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168);
 
         Assert.assertEquals(folders.size(), 1);
         Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
@@ -54,7 +53,7 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLonDirectories_Case4() {
-        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168.1);
+        HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168.1);
 
         Assert.assertEquals(folders.size(), 1);
         Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
