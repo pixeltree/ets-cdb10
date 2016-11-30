@@ -1,12 +1,14 @@
 package org.opengis.cite.cdb10.cdbStructure;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
  * Created by martin on 2016-11-23.
  */
 public class TilesUtilities {
-    public static String getLatDir(double latitude) {
+
+    static String getLatDir(double latitude) {
         String latDir = "";
 
         int dLatCell = 1;
@@ -23,7 +25,7 @@ public class TilesUtilities {
         return latDir;
     }
 
-    public static String getLongDir(double latitude, double longitude) {
+    static String getLongDir(double latitude, double longitude) {
         String LongDir = "";
 
         int dLonCellBasic = 1;
@@ -59,16 +61,20 @@ public class TilesUtilities {
         return dLonZone;
     }
 
-    public static HashSet<TileFolder> getLonDirectories(double minLat, double minLon, double maxLat, double maxLon) {
-        HashSet<TileFolder> folders = new HashSet<>();
+    public static ArrayList<String> getTilesDirectories(String[] selectedDirectories) {
+        ArrayList<String> tilesDirectories = new ArrayList<>();
+        for (String dataset : selectedDirectories) {
+            String code = dataset.substring(0, 3);
 
-        for (int lat = (int) Math.floor(minLat); lat < Math.ceil(maxLat); lat++) {
-            for (int lon = (int) Math.floor(minLon); lon < Math.ceil(maxLon); lon++) {
-                folders.add(new TileFolder(lat, lon));
+            if (code.substring(0, 1).equals("0") ||
+                    code.substring(0, 1).equals("1") ||
+                    code.substring(0, 1).equals("2") ||
+                    code.substring(0, 1).equals("3") ||
+                    code.equals("401")) {
+                tilesDirectories.add(dataset);
             }
         }
-
-        return folders;
+        return tilesDirectories;
     }
 }
 
