@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.testng.Assert;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 /**
  * Created by martin on 2016-11-23.
@@ -28,22 +29,34 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLonDirectories_Case1() {
-        ArrayList<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -179);
+        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -179);
 
         Assert.assertEquals(folders.size(), 1);
-        Assert.assertEquals(folders.get(0).getLatitudeFolder(), "S90");
-        Assert.assertEquals(folders.get(0).getLongitudeFolder(), "W180");
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
     }
 
     @Test
     public void getLonDirectories_Case2() {
-        ArrayList<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -88.1, -179);
+        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -88.1, -179);
 
         Assert.assertEquals(folders.size(), 2);
-        Assert.assertEquals(folders.get(0).getLatitudeFolder(), "S90");
-        Assert.assertEquals(folders.get(0).getLongitudeFolder(), "W180");
-        Assert.assertEquals(folders.get(1).getLatitudeFolder(), "S89");
-        Assert.assertEquals(folders.get(1).getLongitudeFolder(), "W180");
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 89), "W180")));
+    }
+
+    @Test
+    public void getLonDirectories_Case3() {
+        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168);
+
+        Assert.assertEquals(folders.size(), 1);
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
+    }
+
+    @Test
+    public void getLonDirectories_Case4() {
+        LinkedHashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168.1);
+
+        Assert.assertEquals(folders.size(), 1);
+        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
     }
 }
-

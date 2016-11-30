@@ -28,4 +28,12 @@ public class TileLatitudeFolderTest {
         Assert.assertEquals(new TileLatitudeFolder('S', 89).compareTo(new TileLatitudeFolder('N', 0)), -1);
         Assert.assertEquals(new TileLatitudeFolder('N', 0).compareTo(new TileLatitudeFolder('N', 1)), -1);
     }
+
+    @Test
+    public void equals() {
+        Assert.assertNotEquals(new TileLatitudeFolder('S', 0), new TileLatitudeFolder('S', 1));
+        Assert.assertNotEquals(new TileLatitudeFolder('S', 89),new TileLatitudeFolder('N', 0));
+        Assert.assertNotEquals(new TileLatitudeFolder('N', 0), new TileLatitudeFolder('N', 1));
+        Assert.assertEquals(new TileLatitudeFolder('N', 0), new TileLatitudeFolder('N', 0));
+    }
 }

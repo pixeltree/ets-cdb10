@@ -82,4 +82,11 @@ public class TileLatitudeFolder implements Comparable<TileLatitudeFolder> {
         else
             return cellId - otherFolder.cellId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        TileLatitudeFolder other = (TileLatitudeFolder) obj;
+
+        return direction == other.direction && cellId == other.cellId;
+    }
 }
