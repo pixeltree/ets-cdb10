@@ -10,11 +10,11 @@ public class TileFolderTest {
 
     @Test
     public void equals() {
-        TileFolder tileFolder = new TileFolder(new TileLatitudeFolder('S', 90), "W180");
+        TileFolder tileFolder = new TileFolder("S90", "W180");
 
-        Assert.assertNotEquals(tileFolder, new TileFolder(new TileLatitudeFolder('N', 90), "W180"));
-        Assert.assertNotEquals(tileFolder, new TileFolder(new TileLatitudeFolder('S', 89), "W180"));
-        Assert.assertNotEquals(tileFolder, new TileFolder(new TileLatitudeFolder('S', 90), "E180"));
-        Assert.assertEquals(tileFolder, new TileFolder(new TileLatitudeFolder('S', 90), "W180"));
+        Assert.assertNotEquals(tileFolder, new TileFolder("N90", "W180"));
+        Assert.assertNotEquals(tileFolder, new TileFolder("S89", "W180"));
+        Assert.assertNotEquals(tileFolder, new TileFolder("S90", "E180"));
+        Assert.assertEquals(tileFolder, new TileFolder("S90", "W180"));
     }
 }

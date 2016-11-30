@@ -1,26 +1,29 @@
 package org.opengis.cite.cdb10.cdbStructure;
 
 public class TileFolder {
-    private TileLatitudeFolder latitudeFolder;
+    private String latitudeFolder;
     private String longitudeFolder;
 
     public TileFolder(double latitude, double longitude) {
-        this.latitudeFolder = new TileLatitudeFolder(latitude);
-
-        longitudeFolder = TilesUtilities.getLongDir(latitude, longitude);
+        this.latitudeFolder = TilesUtilities.getLatDir(latitude);
+        this.longitudeFolder = TilesUtilities.getLongDir(latitude, longitude);
     }
 
-    public TileFolder(TileLatitudeFolder latitudeFolder, String longitudeFolder) {
+    public TileFolder(String latitudeFolder, String longitudeFolder) {
         this.latitudeFolder = latitudeFolder;
         this.longitudeFolder = longitudeFolder;
     }
 
     public String getLatitudeFolder() {
-        return latitudeFolder.getFolderName();
+        return latitudeFolder;
     }
 
     public String getLongitudeFolder() {
         return longitudeFolder;
+    }
+
+    public String getFolderPath() {
+        return String.format("%s/%s", latitudeFolder, longitudeFolder);
     }
 
     @Override

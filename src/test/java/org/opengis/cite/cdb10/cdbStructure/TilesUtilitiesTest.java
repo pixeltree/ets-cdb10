@@ -12,10 +12,10 @@ public class TilesUtilitiesTest {
 
     @Test
     public void getLatDirectory() {
-        Assert.assertEquals(new TileLatitudeFolder(-5.2).getFolderName(), "S06");
-        Assert.assertEquals(new TileLatitudeFolder(-11).getFolderName(), "S11");
-        Assert.assertEquals(new TileLatitudeFolder(2.5).getFolderName(), "N02");
-        Assert.assertEquals(new TileLatitudeFolder(62.3).getFolderName(), "N62");
+        Assert.assertEquals(TilesUtilities.getLatDir(-5.2), "S06");
+        Assert.assertEquals(TilesUtilities.getLatDir(-11), "S11");
+        Assert.assertEquals(TilesUtilities.getLatDir(2.5), "N02");
+        Assert.assertEquals(TilesUtilities.getLatDir(62.3), "N62");
     }
 
     @Test
@@ -31,7 +31,7 @@ public class TilesUtilitiesTest {
         HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -179);
 
         Assert.assertEquals(folders.size(), 1);
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder("S90", "W180")));
     }
 
     @Test
@@ -39,8 +39,8 @@ public class TilesUtilitiesTest {
         HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -88.1, -179);
 
         Assert.assertEquals(folders.size(), 2);
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 89), "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder("S90", "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder("S89", "W180")));
     }
 
     @Test
@@ -48,7 +48,7 @@ public class TilesUtilitiesTest {
         HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168);
 
         Assert.assertEquals(folders.size(), 1);
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder("S90", "W180")));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class TilesUtilitiesTest {
         HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-90, -180, -89, -168.1);
 
         Assert.assertEquals(folders.size(), 1);
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 90), "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder("S90", "W180")));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TilesUtilitiesTest {
         HashSet<TileFolder> folders = TilesUtilities.getLonDirectories(-89, -180, -88, -168);
 
         Assert.assertEquals(folders.size(), 2);
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 89), "W180")));
-        Assert.assertTrue(folders.contains(new TileFolder(new TileLatitudeFolder('S', 89), "W174")));
+        Assert.assertTrue(folders.contains(new TileFolder("S89", "W180")));
+        Assert.assertTrue(folders.contains(new TileFolder("S89", "W174")));
     }
 }

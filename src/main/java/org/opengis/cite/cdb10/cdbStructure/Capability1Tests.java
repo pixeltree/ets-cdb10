@@ -10,6 +10,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 
 /**
  * Includes various tests of capability 1.
@@ -192,7 +193,7 @@ public class Capability1Tests extends CommonFixture {
             double minLat = Double.parseDouble(inputMinLat);
             double minLong = Double.parseDouble(inputMinLon);
 
-            latLongDir.add(new TileLatitudeFolder(minLat).getFolderName() + "/" + TilesUtilities.getLongDir(minLat, minLong));
+            latLongDir.add(TilesUtilities.getLatDir(minLat) + "/" + TilesUtilities.getLongDir(minLat, minLong));
 
             //    System.out.println("First two");
         } else {
@@ -200,7 +201,7 @@ public class Capability1Tests extends CommonFixture {
             if (latlongSplit.length == 4 && inputMinLat.isEmpty() && inputMinLon.isEmpty()) {
                 double maxLat = Double.parseDouble(inputMaxLat);
                 double maxLong = Double.parseDouble(inputMaxLon);
-                latLongDir.add(new TileLatitudeFolder(maxLat).getFolderName() + "/" + TilesUtilities.getLongDir(maxLat, maxLong));
+                latLongDir.add(TilesUtilities.getLatDir(maxLat) + "/" + TilesUtilities.getLongDir(maxLat, maxLong));
 
                 //  System.out.println("Last two");
             } else if (latlongSplit.length == 4 &&
@@ -213,66 +214,9 @@ public class Capability1Tests extends CommonFixture {
                 double maxLat = Double.parseDouble(inputMaxLat);
                 double maxLong = Double.parseDouble(inputMaxLon);
 
-                TileLatitudeFolder minLatFolder = new TileLatitudeFolder(minLat);
-                TileLatitudeFolder maxLatFolder = new TileLatitudeFolder(maxLat);
-
-                ArrayList<TileLatitudeFolder> latDir = TileLatitudeFolder.getInclusiveDirectories(minLatFolder, maxLatFolder);
-
-                ArrayList<String> longDir = new ArrayList<>();
-
-                int minLongZone = Integer.parseInt(TilesUtilities.getLongDir(minLat, minLong).substring(1));
-                int maxLongZone = Integer.parseInt(TilesUtilities.getLongDir(maxLat, maxLong).substring(1));
-
-                if (minLong * maxLong < 0) {
-                    for (int m = 1; m <= minLongZone; m++) {
-                        // for (int m = 1; m <= minLongZone; m=m+getDLonZone(minLat)) {
-                        if (m < 10)
-                            longDir.add(TilesUtilities.getLongDir(minLat, minLong).substring(0, 1) + "00" + m);
-                        else if (m >= 10 && m < 100)
-                            longDir.add(TilesUtilities.getLongDir(minLat, minLong).substring(0, 1) + "0" + m);
-                        else
-                            longDir.add(TilesUtilities.getLongDir(minLat, minLong).substring(0, 1) + m);
-                    }
-
-                    Collections.reverse(longDir);
-
-                    for (int n = 0; n < maxLongZone; n++) {
-                        // for (int n = 0; n <= maxLongZone; n=n+getDLonZone(maxLat)) {
-                        if (n < 10)
-                            longDir.add(TilesUtilities.getLongDir(maxLat, maxLong).substring(0, 1) + "00" + n);
-                        else if (n >= 10 && n < 100)
-                            longDir.add(TilesUtilities.getLongDir(maxLat, maxLong).substring(0, 1) + "0" + n);
-                        else
-                            longDir.add(TilesUtilities.getLongDir(maxLat, maxLong).substring(0, 1) + n);
-                    }
-                }
-                if (minLong * maxLong > 0) {
-                    int minLo = minLongZone;
-                    int maxLo = maxLongZone;
-                    if (minLongZone > maxLongZone) {
-                        minLo = maxLongZone;
-                        maxLo = minLongZone;
-                    }
-                    for (int l = minLo; l <= maxLo; l++) {
-                        if (l < 10)
-                            longDir.add(TilesUtilities.getLongDir(minLat, minLong).substring(0, 1) + "00" + l);
-                        else if (l >= 10 && l < 100)
-                            longDir.add(TilesUtilities.getLongDir(minLat, minLong).substring(0, 1) + "0" + l);
-                        else
-                            longDir.add(TilesUtilities.getLongDir(minLat, minLong).substring(0, 1) + l);
-                    }
-                }
-
-                for (int a = 0; a < latDir.size(); a++) {
-                    double zone = Double.parseDouble(latDir.get(a).getFolderName().substring(1));
-                    if (latDir.get(a).getDirection() == 'S')
-                        zone = zone * (-1);
-
-                    int dLonZone = TilesUtilities.getDLonZone(zone);
-
-                    for (int b = 0; b < longDir.size(); b = b + dLonZone) {
-                        latLongDir.add(latDir.get(a) + "/" + longDir.get(b));
-                    }
+                HashSet<TileFolder> tileDirectories = TilesUtilities.getLonDirectories(minLat, minLong, maxLat, maxLong);
+                for (TileFolder tileFolder : tileDirectories) {
+                    latLongDir.add(tileFolder.getFolderPath());
                 }
             }
         }
