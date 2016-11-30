@@ -26,6 +26,9 @@ public abstract class TestFixture<T extends CommonFixture> {
     private static ITestContext testContext;
     private static ISuite suite;
     protected T testSuite;
+    protected String directories;
+    protected String latlong;
+    protected String minmaxlod;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -42,7 +45,9 @@ public abstract class TestFixture<T extends CommonFixture> {
         cdb_root = Files.createTempDirectory("cdbTest-");
 
         when(suite.getAttribute(SuiteAttribute.TEST_SUBJECT.getName())).thenReturn(cdb_root.toFile());
-        when(suite.getAttribute(SuiteAttribute.DIRECTORIES.getName())).thenReturn("");
+        when(suite.getAttribute(SuiteAttribute.DIRECTORIES.getName())).thenReturn(directories);
+        when(suite.getAttribute(SuiteAttribute.LATLONG.getName())).thenReturn(latlong);
+        when(suite.getAttribute(SuiteAttribute.MINMAXLOD.getName())).thenReturn(minmaxlod);
         testSuite.initCommonFixture(testContext);
         testSuite.obtainTestSubject(testContext);
     }

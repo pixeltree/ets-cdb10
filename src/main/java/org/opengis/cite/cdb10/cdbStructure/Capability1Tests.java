@@ -113,10 +113,6 @@ public class Capability1Tests extends CommonFixture {
         }
     }
 
-    private boolean directoryIsInTilesFolder(String code) {
-        return false;
-    }
-
     private ArrayList<String> validateDirectoryExists(String directoryName, String folderName) {
         ArrayList<String> failMessages = new ArrayList<>();
         if (!checkDirectory(path + "/" + directoryName + "/" + folderName)) {

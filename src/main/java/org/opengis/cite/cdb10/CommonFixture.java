@@ -75,12 +75,12 @@ public class CommonFixture {
 
         directories = testContext.getSuite().getAttribute(
                 SuiteAttribute.DIRECTORIES.getName()).toString();
-//
-//        latlong = testContext.getSuite().getAttribute(
-//                SuiteAttribute.LATLONG.getName()).toString();
-//
-//        minmaxlod = testContext.getSuite().getAttribute(
-//                SuiteAttribute.MINMAXLOD.getName()).toString();
+
+        latlong = testContext.getSuite().getAttribute(
+                SuiteAttribute.LATLONG.getName()).toString();
+
+        minmaxlod = testContext.getSuite().getAttribute(
+                SuiteAttribute.MINMAXLOD.getName()).toString();
     }
 
     @BeforeMethod
