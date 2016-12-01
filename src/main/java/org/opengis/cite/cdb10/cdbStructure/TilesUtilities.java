@@ -1,7 +1,6 @@
 package org.opengis.cite.cdb10.cdbStructure;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Created by martin on 2016-11-23.

@@ -51,3 +51,4 @@ public class TileFolder {
         return getLatitudeFolder().hashCode() + getLongitudeFolder().hashCode();
     }
 }
+

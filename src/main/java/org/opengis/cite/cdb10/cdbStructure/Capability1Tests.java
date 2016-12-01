@@ -7,10 +7,7 @@ import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Includes various tests of capability 1.
@@ -37,7 +34,7 @@ public class Capability1Tests extends CommonFixture {
         ArrayList<String> failMessages = new ArrayList<>();
 
         for (String dataset : tilesDatasets) {
-            failMessages.addAll(validateLatLonSplit(dataset));
+            failMessages.addAll(new TileFolderValidator(dataset, new TileFolderParameters(latlong), minmaxlod, path).validateLatLonSplit());
         }
 
         if (!failMessages.isEmpty()) {
@@ -79,7 +76,7 @@ public class Capability1Tests extends CommonFixture {
      */
     @Test
     public void isValidDirectory() {
-        if (!checkDirectory(path)) {
+        if (!TileFolderValidator.checkDirectory(path)) {
             Assert.fail("The CDB location is empty! " + minmaxlod);
         } else {
             String[] selectedDirectories = directories.split("-");
@@ -115,147 +112,10 @@ public class Capability1Tests extends CommonFixture {
 
     private ArrayList<String> validateDirectoryExists(String directoryName, String folderName) {
         ArrayList<String> failMessages = new ArrayList<>();
-        if (!checkDirectory(path + "/" + directoryName + "/" + folderName)) {
+        if (!TileFolderValidator.checkDirectory(path + "/" + directoryName + "/" + folderName)) {
             failMessages.add("The dataset " + folderName + " does not exist in" + directoryName + "directory");
         }
         return failMessages;
     }
 
-    private ArrayList<String> validateLatLonSplit(String selection) {
-        ArrayList<String> failMessages = new ArrayList<>();
-        String[] latlongSplit = latlong.split("_");
-
-        // if (latlongSplit.length == 2) {
-        if (latlongSplit.length == 2 ||
-                (latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()) ||
-                (latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty())) {
-            String[] lodMinMaxSplit = minmaxlod.split("#");
-            ArrayList<String> result = getTileDirectories(latlongSplit);
-            String LODFolder = "";
-            for (int c1 = 0; c1 < result.size(); c1++) {
-                if (!checkDirectory(path + "/Tiles/" + result.get(c1))) {
-                    failMessages.add("Tile " + result.get(c1) + "does not exist in Tiles directory.");
-                } else {
-
-                    if (!checkDirectory(path + "/Tiles/" + result.get(c1) + "/" + selection)) {
-                        failMessages.add("The dataset " + selection + " does not exist in " + result.get(c1) + " of Tiles directory");
-                    } else {
-
-                        datasetSearchLoop:
-                        for (int j = 0; j < lodMinMaxSplit.length; j = j + 2) {
-                            String innerSplit[] = lodMinMaxSplit[j].split("@");
-                            String dataset = innerSplit[0];
-                            int minLOD = -10;
-                            int maxLOD = 23;
-                            if (dataset.equals(selection)) {
-                                if (innerSplit[1].equals("min")) {
-                                    if (!lodMinMaxSplit[j + 1].isEmpty())
-                                        minLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
-                                    // System.out.println("min " + selection + "= " + minLOD);
-                                }
-                                if (innerSplit[1].equals("max")) {
-                                    if ((lodMinMaxSplit.length % 2) == 0) {
-                                        if (!lodMinMaxSplit[j + 1].isEmpty())
-                                            maxLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
-                                    } else {
-                                        if (j < lodMinMaxSplit.length - 1) {
-                                            if (!lodMinMaxSplit[j + 1].isEmpty())
-                                                maxLOD = Integer.parseInt(lodMinMaxSplit[j + 1]);
-                                        }
-                                    }
-                                    for (int k = 0; k <= maxLOD; k++) {
-                                        if (k < 10)
-                                            LODFolder = "L0" + Integer.toString(k);
-                                        else
-                                            LODFolder = "L" + Integer.toString(k);
-
-                                        if (!checkDirectory(path + "/Tiles/" + result.get(c1) + "/" + dataset + "/" + LODFolder)) {
-                                            failMessages.add("The LOD folder " + LODFolder + " does not exist in  " + dataset + " dataset of " + result.get(c1));
-                                        }
-
-                                    }
-
-                                    break datasetSearchLoop;
-                                }
-
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-
-//                           else if(latlongSplit.length == 4 && latlongSplit[0].isEmpty() && latlongSplit[1].isEmpty()){
-//                               ArrayList < String > result = getTileDirectories(latlongSplit);
-//                               for(int c1=0;c1<result.size();c1++) {
-//                                   isDirectory = checkDirectory(path + "/Tiles/" + result.get(c1)+"/"+selection);
-//                                   if (!isDirectory) {
-//                                       hasError = true;
-//                                       failMessages.add("The dataset " + result.get(c1)+"/"+selection + " does not exist in Tiles directory");
-//                                   }
-//                               }
-//                           }
-//
-//                           else if(latlongSplit.length == 4 && !latlongSplit[0].isEmpty() && !latlongSplit[1].isEmpty() && !latlongSplit[2].isEmpty() && !latlongSplit[3].isEmpty()){
-//                               ArrayList < String > result = getTileDirectories(latlongSplit);
-//                               for(int c1=0;c1<result.size();c1++) {
-//                                   isDirectory = checkDirectory(path + "/Tiles/" + result.get(c1)+"/"+selection);
-//                                   if (!isDirectory) {
-//                                       hasError = true;
-//                                       failMessages.add("The dataset " + result.get(c1)+"/"+selection + " does not exist in Tiles directory");
-//                                   }
-//                               }
-//                           }
-        else {
-            failMessages.add("None or Bad selection of geographical coverage to check Tiles directory");
-        }
-        return failMessages;
-    }
-
-    private ArrayList<String> getTileDirectories(String[] latlongSplit) {
-        ArrayList<String> latLongDir = new ArrayList<>();
-
-        String inputMinLat = latlongSplit[0];
-        String inputMinLon = latlongSplit[1];
-        String inputMaxLat = latlongSplit[2];
-        String inputMaxLon = latlongSplit[3];
-
-        // No maximum lat/lon provided
-        if (latlongSplit.length == 2) {
-            double minLat = Double.parseDouble(inputMinLat);
-            double minLong = Double.parseDouble(inputMinLon);
-
-            latLongDir.add(new TileFolder(minLat, minLong).getFolderPath());
-        } else {
-            // No minimum lat/lon provided
-            if (latlongSplit.length == 4 && inputMinLat.isEmpty() && inputMinLon.isEmpty()) {
-                double maxLat = Double.parseDouble(inputMaxLat);
-                double maxLong = Double.parseDouble(inputMaxLon);
-
-                latLongDir.add(new TileFolder(maxLat, maxLong).getFolderPath());
-
-                //  System.out.println("Last two");
-            } else if (latlongSplit.length == 4 &&
-                    !inputMinLat.isEmpty() &&
-                    !inputMinLon.isEmpty() &&
-                    !inputMaxLat.isEmpty() &&
-                    !inputMaxLon.isEmpty()) {
-                double minLat = Double.parseDouble(inputMinLat);
-                double minLong = Double.parseDouble(inputMinLon);
-                double maxLat = Double.parseDouble(inputMaxLat);
-                double maxLong = Double.parseDouble(inputMaxLon);
-
-                HashSet<TileFolder> tileDirectories = TileFolder.getTileFolders(minLat, minLong, maxLat, maxLong);
-                for (TileFolder tileFolder : tileDirectories) {
-                    latLongDir.add(tileFolder.getFolderPath());
-                }
-            }
-        }
-        return latLongDir;
-    }
-
-    private boolean checkDirectory(String path) {
-        return Files.isDirectory(Paths.get(path));
-    }
 }
