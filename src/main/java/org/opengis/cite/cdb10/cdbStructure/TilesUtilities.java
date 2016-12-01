@@ -64,14 +64,16 @@ public class TilesUtilities {
     public static ArrayList<String> getTilesDirectories(String[] selectedDirectories) {
         ArrayList<String> tilesDirectories = new ArrayList<>();
         for (String dataset : selectedDirectories) {
-            String code = dataset.substring(0, 3);
+            if (dataset.length() > 0) {
+                String code = dataset.substring(0, 3);
 
-            if (code.substring(0, 1).equals("0") ||
-                    code.substring(0, 1).equals("1") ||
-                    code.substring(0, 1).equals("2") ||
-                    code.substring(0, 1).equals("3") ||
-                    code.equals("401")) {
-                tilesDirectories.add(dataset);
+                if (code.substring(0, 1).equals("0") ||
+                        code.substring(0, 1).equals("1") ||
+                        code.substring(0, 1).equals("2") ||
+                        code.substring(0, 1).equals("3") ||
+                        code.equals("401")) {
+                    tilesDirectories.add(dataset);
+                }
             }
         }
         return tilesDirectories;
