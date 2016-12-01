@@ -18,6 +18,12 @@ public class MetadataTestFixture<T extends CommonFixture> extends TestFixture<T>
     protected Path metadataFolder;
     protected Path schemaFolder;
 
+    public MetadataTestFixture() {
+        directories = "001_Elevation";
+        latlong = "-90_-180_-89_-179";
+        minmaxlod = "001_Elevation@min#1#001_Elevation@max#0";
+    }
+
     @Before
     public void createDirectories() throws IOException {
         metadataFolder = Files.createDirectories(cdb_root.resolve(Paths.get("Metadata")));

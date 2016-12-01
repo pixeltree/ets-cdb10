@@ -14,6 +14,10 @@ import java.nio.file.Paths;
 public class VerifyMetadataStructureTests extends TestFixture<MetadataStructureTests> {
     public VerifyMetadataStructureTests() {
         testSuite = new MetadataStructureTests();
+
+        directories = "001_Elevation";
+        latlong = "-90_-180_-89_-179";
+        minmaxlod = "001_Elevation@min#1#001_Elevation@max#0";
     }
 
     @Test(expected = AssertionError.class)
