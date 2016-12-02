@@ -11,7 +11,6 @@ public class TileFolderValidator {
 
     private final String selection;
     private final TileFolderParameters tileFolderParameters;
-    //    private final String latlong;
     private final String minmaxlod;
     private final String path;
 
@@ -25,7 +24,7 @@ public class TileFolderValidator {
     public ArrayList<String> validateLatLonSplit() {
         ArrayList<String> failMessages = new ArrayList<>();
 
-        if (tileFolderParameters.hasNoParameters()) {
+        if (tileFolderParameters.hasNoLatLonParameters()) {
             Assert.fail("None or Bad selection of geographical coverage to check Tiles directory");
         }
 
@@ -110,7 +109,7 @@ public class TileFolderValidator {
     static ArrayList<String> getTileDirectories(TileFolderParameters parameters) {
         ArrayList<String> latLongDir = new ArrayList<>();
 
-        if (parameters.hasAllParameters()) {
+        if (parameters.hasAllLatLonParameters()) {
             HashSet<TileFolder> tileDirectories = TileFolder.getTileFolders(parameters.getMinLat(),
                     parameters.getMinLon(), parameters.getMaxLat(), parameters.getMaxLon());
             for (TileFolder tileFolder : tileDirectories) {

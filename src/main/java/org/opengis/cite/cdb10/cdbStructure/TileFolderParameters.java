@@ -9,8 +9,8 @@ public class TileFolderParameters {
     public TileFolderParameters(String latlong) {
         String[] latlongsplit = latlong.split("_");
 
-        minLat = latlongsplit[0].length() > 0 ? Double.parseDouble(latlongsplit[0]) : null;
-        minLon = latlongsplit[1].length() > 0 ? Double.parseDouble(latlongsplit[1]) : null;
+        minLat = latlongsplit.length > 0 && latlongsplit[0].length() > 0 ? Double.parseDouble(latlongsplit[0]) : null;
+        minLon = latlongsplit.length > 1 && latlongsplit[1].length() > 0 ? Double.parseDouble(latlongsplit[1]) : null;
         maxLat = latlongsplit.length > 2 ? Double.parseDouble(latlongsplit[2]) : null;
         maxLon = latlongsplit.length > 3 ? Double.parseDouble(latlongsplit[3]) : null;
     }
@@ -31,7 +31,7 @@ public class TileFolderParameters {
         return maxLon;
     }
 
-    public boolean hasAllParameters() {
+    public boolean hasAllLatLonParameters() {
         return minLat != null && minLon != null && maxLat != null && maxLon != null;
     }
 
@@ -43,7 +43,7 @@ public class TileFolderParameters {
         return maxLat != null && maxLon != null;
     }
 
-    public boolean hasNoParameters() {
+    public boolean hasNoLatLonParameters() {
         return minLat == null && minLon == null && maxLat == null && maxLon == null;
     }
 }
